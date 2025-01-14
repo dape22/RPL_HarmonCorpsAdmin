@@ -66,5 +66,5 @@ def main():
     else:
         st.warning("No users found who need verification.")
 
-
-main()
+if __name__ == "__main__":
+    main()
