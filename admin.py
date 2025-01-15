@@ -28,12 +28,6 @@ def get_db():
     # Mengembalikan objek Firestore
     return db
 
-# Contoh Penggunaan
-if 'db' not in st.session_state:  # Cek apakah db sudah ada di session_state
-    st.session_state.db = get_db()
-
-# Sekarang objek Firestore tersedia di st.session_state.db
-db = st.session_state.db
 
 # Mengambil daftar pengguna yang belum terverifikasi dari Firestore
 def get_unverified_users():
@@ -68,6 +62,12 @@ def verify_user(uid):
 
 # Interface Streamlit
 def main():
+    # Contoh Penggunaan
+    if 'db' not in st.session_state:  # Cek apakah db sudah ada di session_state
+        st.session_state.db = get_db()
+    
+    # Sekarang objek Firestore tersedia di st.session_state.db
+    db = st.session_state.db
     st.title("Admin User Verification")
 
     # Menampilkan pengguna yang belum terverifikasi
