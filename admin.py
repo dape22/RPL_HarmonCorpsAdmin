@@ -2,14 +2,38 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
 import pandas as pd
+import json
 
-# Inisialisasi Firebase Admin SDK
-if not firebase_admin._apps:
-    cred = credentials.Certificate("rpl-edudoexam-58276d3f3b2b.json")
-    firebase_admin.initialize_app(cred)
+def get_db():
+    """Menginisialisasi Firebase Admin SDK dan mengembalikan objek Firestore."""
+    if not firebase_admin._apps:  # Cek apakah Firebase Admin sudah diinisialisasi
+        # Mengambil kredensial dari secrets Streamlit
+        firebase_key_json = st.secrets["text_key"]["firebase_key_json"]
 
-# Inisialisasi Firestore
-db = firestore.client()
+        # Mengonversi string JSON menjadi dictionary
+        key_dict = json.loads(firebase_key_json)
+
+        # Membuat kredensial
+        creds = credentials.Certificate(key_dict)
+
+        # Menginisialisasi Firebase Admin SDK
+        firebase_admin.initialize_app(creds)
+
+        # Debug (opsional, untuk memastikan key benar)
+        st.write("Firebase Admin SDK berhasil diinisialisasi.")
+
+    # Mengakses Firestore
+    db = firestore.client()
+
+    # Mengembalikan objek Firestore
+    return db
+
+# Contoh Penggunaan
+if 'db' not in st.session_state:  # Cek apakah db sudah ada di session_state
+    st.session_state.db = get_db()
+
+# Sekarang objek Firestore tersedia di st.session_state.db
+db = st.session_state.db
 
 # Mengambil daftar pengguna yang belum terverifikasi dari Firestore
 def get_unverified_users():
@@ -66,5 +90,5 @@ def main():
     else:
         st.warning("No users found who need verification.")
 
-if __name__ == "__main__":
-    main()
+
+main()
